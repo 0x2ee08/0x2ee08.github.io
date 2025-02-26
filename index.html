@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0x2ee08</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #fff;
+            color: #000;
+            line-height: 1.8;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 1em;
+            color: #666;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            width: 1px;
+            background: #000;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            margin-bottom: 60px;
+            position: relative;
+            width: 100%;
+        }
+
+        .timeline-content {
+            width: calc(50% - 40px);
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            float: left;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            float: right;
+            text-align: left;
+        }
+
+        .timeline-date {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .timeline-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 12px;
+        }
+
+        .timeline-description {
+            font-size: 0.95em;
+            color: #333;
+            font-weight: 300;
+        }
+
+        .timeline-description h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .timeline-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .timeline-images img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border: 1px solid #000;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            /* filter: grayscale(100%); */
+        }
+
+        .timeline-images img:hover {
+            transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+
+        .timeline-images.single-image {
+            display: block;
+        }
+
+        .timeline-images.single-image img {
+            height: auto;
+            max-height: 250px;
+            width: 100%;
+            object-fit: contain;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border-radius: 50%;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            transform: translateX(-50%) scale(1.5);
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 90vh;
+            border: 1px solid #fff;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            font-size: 40px;
+            color: #fff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-lightbox:hover {
+            transform: rotate(90deg);
+        }
+
+        .lightbox-nav button {
+            background: none;
+            color: #fff;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox-nav button:hover {
+            transform: scale(1.2);
+        }
+
+        .prev-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .next-button {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 40px);
+                float: none !important;
+                margin-left: 40px;
+                text-align: left;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .timeline-images img {
+                height: 80px;
+            }
+
+            .timeline-images.single-image img {
+                max-height: 200px;
+            }
+        }
+
+        .clearfix::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+
+        /* Improved styling for password-protected sections */
+        .password-section {
+            margin-top: 15px;
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+
+        .password-section h4 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .password-form {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .password-input {
+            padding: 10px 15px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            width: 200px;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            border-color: #666;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .password-button {
+            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .password-button:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+
+        /* Decrypted images container */
+        .decrypted-images {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
+
+    <style>
+        .timeline-description {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" data-aos="fade-down">
+            <h1>Dinh Gia Bao</h1>
+            <h3>0x2ee08 / 80ee2x0</h3>
+            <p>My journey through education, friends, experiences, and chill vibes</p>
+            <p>There are descriptions hidden somewhere...</p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Feb 2025 - Feb 2026</div>
+                    <h2 class="timeline-title">Samsung Science and Tech Adventure</h2>
+                    <p class="timeline-description">
+                        <!-- <h4>Status: Ongoing</h4> -->
+                        Zhm bgmh mabl vhhe Ltflngz lvahetklabi zbz. Extkgbgz ytgvr tezhkbmafl, mtvdebgz kxte ikhcxvml, tgw tbfbgz yhk t Dhkxtg MHIBD BB.3 vxkm. Ha, tgw t pxxd bg Dhkxt? Rxl, iextlx!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./SST/welcome/1.jpg" alt="Welcome event" onclick="openLightbox(this)">
+                        <img src="./SST/gift/1.png" alt="Gift" onclick="openLightbox(this)">
+                        <img src="./SST/koreanCourse/3.jpg" alt="Korean Course 3" onclick="openLightbox(this)">
+                        <img src="./SST/koreanCourse/1.jpg" alt="Korean Course 1" onclick="openLightbox(this)">
+                        <img src="./SST/koreanCourse/2.jpg" alt="Korean Course 2" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Jan 2025</div>
+                    <h2 class="timeline-title">Hey Thomas!</h2>
+                    <p class="timeline-description">
+                        Fxxm fr gxp Xgzebla mxtvaxk. Wnwx’l zhm t obux—mxtvabgz’l gxoxk uxxg mabl yng!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./others/thomas.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Nov 2024</div>
+                    <h2 class="timeline-title">Back to Secondary School</h2>
+                    <p class="timeline-description">
+                        Php, mhmte makhputvd obuxl! <br> I.L. Matm znr hg max kbzam bg max ybklm ibv? Tulhenmx ZHTM.
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./others/back2Sec.JPG" onclick="openLightbox(this)">
+                        <img src="./others/back2Sec2.png" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Sep 2024</div>
+                    <h2 class="timeline-title">Nhà thờ đổ (Falling Church ?) - Nam Dinh</h2>
+                    <p class="timeline-description">
+                        Vaxvdxw hnm mabl “mhnkblm lihm” [ybklm bftzx]. Rtpg—yxem ebdx t zahlm mhpg vankva. Par’l mabl xoxg t mabgz? <br/>
+                        Tehgz pbma max mkbi, px telh lmhiixw ur t hkiatgtzx tgw fxm lhfx exll yhkmngtmx dbwl. Dbgwt abm wbyyxkxgm—ztox fx t ebmmex fhkx fhmbotmbhg bg ebyx.
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./others/fallingChurchND.JPG" onclick="openLightbox(this)">
+                        <img src="./others/cnv2.JPG" onclick="openLightbox(this)">
+                        <img src="./others/cnv3.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 2024</div>
+                    <h2 class="timeline-title">Chillin in Son La</h2>
+                    <p class="timeline-description">
+                        Unkgm hnm ykhf lmnwrbgz, lh fx tgw fr VI unwwr abm Lhg Et yhk 3 wtrl hy inkx yng. <br> Ha, matm’l fr wtw bg max ibvl, ump!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./vacation/1HV7LFHIS_55FGU5.JPG" onclick="openLightbox(this)">
+                        <img src="./vacation/1HV7LFHL3_55FGU5.JPG" onclick="openLightbox(this)">
+                        <img src="./vacation/1HV7LFHEH_55FGU5.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 2024</div>
+                    <h2 class="timeline-title">Teacher Vibes</h2>
+                    <p class="timeline-description">
+                        Latkxw fr vhwbgz ehox ur mxtvabgz V++ tm t vhniex hy lxvhgwtkr lvahhel. <br> Dbwl pxkx arixw—lnixk yng zbz, unm lnffxk-hger, ltwer.
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./teaching/1HU7FR4JQ_9REJR4.JPG" onclick="openLightbox(this)">
+                        <img src="./teaching/1HU7FR4KH_9REJR4.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">March 2024</div>
+                    <h2 class="timeline-title">Comp Trip (Hoi An, Da Nang, Hue)</h2>
+                    <p class="timeline-description">
+                        Ftwx bm mh max ybgtel hy lhfx vhwbgz vhfil pbma fr unwwr. <br> 5 wtrl hy vhfixmbgz tgw vabeebgz bg whix lihml—yhkxlml, fhngmtbgl, xibv yhhw, tgw tgvbxgm obuxl. Zhhw mbfxl!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./HueVKU/1.JPG" onclick="openLightbox(this)">
+                        <img src="./HueVKU/5.JPG" onclick="openLightbox(this)">
+                        <img src="./HueVKU/6.png" onclick="openLightbox(this)">
+                        <img src="./HueVKU/7.png" onclick="openLightbox(this)">
+                        <img src="./HueVKU/8.png" onclick="openLightbox(this)">
+                        <img src="./HueVKU/9.png" onclick="openLightbox(this)">
+                        <img src="./HueVKU/10.png" onclick="openLightbox(this)">
+                        <img src="./HueVKU/IMG_1091.jpg" onclick="openLightbox(this)">
+                        <img src="./HueVKU/IMG_1280.jpg" onclick="openLightbox(this)">
+                        <img src="./HueVKU/2.JPG" onclick="openLightbox(this)">
+                        <img src="./HueVKU/img.png" onclick="openLightbox(this)">
+                        <img src="./HueVKU/4.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Nov 2023</div>
+                    <h2 class="timeline-title">What???</h2>
+                    <p class="timeline-description">
+                        Yup, that’s my school! <br> Lftvd bg max fbwwex hy Atghb, gh ubzzbx.
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./others/wth.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Oct 2023</div>
+                    <h2 class="timeline-title">Ba Vi Getaway</h2>
+                    <p class="timeline-description">
+                        Vktlaxw tm fr kbva ykbxgw’l ahfxlmtr yhk 2 wtrl. <br> Matm gbzam ldr? Lmtk hoxkehtw—gxoxk lxxg tgrmabgz ebdx bm!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./others/Bavi1.JPG" onclick="openLightbox(this)">
+                        <img src="./others/Bavi2.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Sep 2023 - Sep 2024</div>
+                    <h2 class="timeline-title">HSGS Coding Squad</h2>
+                    <p class="timeline-description">
+                        <!-- <h4>Status: Ended</h4> -->
+                        - Mktbgxw atkw yhk max lvahhe mxtf—mhi 10 pxgm mh gtmbhgtel, B zhm 13ma (vehlx, unm hhy). <br>
+                        - Extkgxw vktsr tezhkbmafl tgw abm ni mhgl hy vhfil. <br>
+                        - Wbw t yng zkhni ikhcxvm tgw lhfx uhgwbgz mkbil. Uxlm abza lvahhe wtrl, atgwl whpg!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./DTTH/1.png" onclick="openLightbox(this)">
+                        <img src="./DTTH/2.png" onclick="openLightbox(this)">
+                        <img src="./DTTH/3.png" onclick="openLightbox(this)">
+                        <img src="./DTTH/4.png" onclick="openLightbox(this)">
+                        <img src="./DTTH/5.png" onclick="openLightbox(this)">
+                        <img src="./DTTH/6.png" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">August 2023</div>
+                    <h2 class="timeline-title">Gifted High School Win</h2>
+                    
+                    <p class="timeline-description">
+                        Phkdxw fr unmm hyy tgw etgwxw tm ALZL Bgyhkftmbvl. <br> Fxm fr ytox vhtva—ax vtkkbxw fx makhnza abza lvahhe!
+                    </p>
+
+                    <!-- Improved password section -->
+                    <div class="password-section" id="protected-image-section">
+                        <h4>View Protected Image</h4>
+                        <div class="password-form">
+                            <input 
+                                type="password" 
+                                id="password-input" 
+                                class="password-input"
+                                placeholder="Enter password">
+                            <button 
+                                onclick="decryptAndShowImage()" 
+                                class="password-button">
+                                Unlock
+                            </button>
+                        </div>
+                        <div class="status-message" id="hs-status-message"></div>
+                    </div>
+                    <div class="timeline-images single-image" id="protected-image-container"></div>
+
+                    <!-- <div class="timeline-images single-image" id="protected-image-container">
+                        <div id="password-prompt" style="display: flex; justify-content: center; align-items: center; gap: 15px; padding: 20px;">
+                            <input 
+                                type="password" 
+                                id="password-input" 
+                                placeholder="Enter password" 
+                                style="padding: 12px 20px; width: 200px; font-family: 'Roboto', sans-serif; font-size: 1em; color: #333; background-color: #fff; border: 1px solid #000; border-radius: 5px; outline: none; transition: all 0.3s ease;"
+                                onfocus="this.style.border-color='#666'; this.style.box-shadow='0 6px 15px rgba(0, 0, 0, 0.2);'"
+                                onblur="this.style.border-color='#000'; this.style.box-shadow='0 4px 10px rgba(0, 0, 0, 0.1);'"
+                            >
+                            <button 
+                                onclick="decryptAndShowImage()" 
+                                style="padding: 12px 25px; font-family: 'Playfair Display', serif; font-size: 1em; font-weight: 700; color: #fff; background-color: #000; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease;"
+                                onmouseover="this.style.background-color='#333'; this.style.box-shadow='0 6px 15px rgba(0, 0, 0, 0.3);'"
+                                onmouseout="this.style.background-color='#000'; this.style.box-shadow='0 4px 10px rgba(0, 0, 0, 0.2);'"
+                            >Submit</button>
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="timeline-images single-image" id="protected-image-container">
+                        <div id="password-prompt">
+                            <input type="password" id="password-input" placeholder="Enter password">
+                            <button onclick="decryptAndShowImage()">Submit</button>
+                        </div>
+                    </div> -->
+                    <!-- <div class="timeline-images single-image">
+                        <img src="./gotIntoHS/IMG_9039.JPG" alt="myTeacher" onclick="openLightbox(this)">
+                    </div> -->
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">June 2023</div>
+                    <h2 class="timeline-title">Met Korea’s First Lady</h2>
+                    <p class="timeline-description">
+                        Lvahhe’l ubz hg Ltflngz’l Lheox yhk Mhfhkkhp, lh B zhm mh vatm pbma Lhnma Dhkxt’l Ybklm Etwr. Gxoxk xqixvmxw matm!
+                    </p>
+                    <div class="timeline-images">
+                        <img src="./MeetingKWP/IMG_9042.JPG" onclick="openLightbox(this)">
+                        <img src="./MeetingKWP/IMG_9043.JPG" onclick="openLightbox(this)">
+                        <img src="./MeetingKWP/IMG_9044.JPG" onclick="openLightbox(this)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item clearfix" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2020 - 2023</div>
+                    <h2 class="timeline-title">Secondary School Days</h2>
+                    <p class="timeline-description">
+                        - Dbvdxw hyy vhwbgz pbma Irmahg bg 7ma zktwx. <br>
+                        - Gtbexw lhfx tptkwl bg vhfil ebdx Lheox yhk Mhfhkkhp tgw Atghb Lvbxgvx Ytbk. <br>
+                        - Yhngw Vhfixmbmbox Ikhzktffbgz bg 2022—ibvdxw ni V++ tgw lgtzzxw 3kw (2022) tgw 2gw (2023) bg Atghb Herfibvl. Ghm utw, kbzam?
+                    </p>
+                    <!-- Public images section -->
+                    <div class="timeline-images" id="secondary-decrypted-images">
+                        <img src="./others/c2.png" onclick="openLightbox(this)">
+                        <img src="./others/c22.png" onclick="openLightbox(this)">
+                        <!-- <div ></div> -->
+                    </div>
+                    
+                    <div class="password-section" id="secondary-password-section">
+                        <h4>View Competition Achievements</h4>
+                        <div class="password-form">
+                            <input 
+                                type="password" 
+                                id="secondary-password-input" 
+                                class="password-input"
+                                placeholder="Enter password">
+                            <button 
+                                onclick="decryptAndShowSecondaryImages()" 
+                                class="password-button">
+                                Unlock
+                            </button>
+                        </div>
+                        <div class="status-message" id="secondary-status-message"></div>
+                    </div>
+                    
+                    <!-- Container for decrypted images -->
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="close-lightbox" onclick="closeLightbox()">×</button>
+            <img class="lightbox-image" id="lightbox-image" src="" alt="Enlarged image">
+            <div class="lightbox-nav">
+                <button class="prev-button" onclick="changeImage(-1)">❮</button>
+                <button class="next-button" onclick="changeImage(1)">❯</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let encryptedImage = null;
+        
+        // Object to hold the encrypted secondary images
+        const encryptedSecondaryImages = {
+            'THT': null,
+            '1': null,
+            '3': null, 
+            '4': null
+        };
+
+        // Fetch the encrypted strings when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load the high school image
+                const response = await fetch('./gotIntoHS/encrypted_image.txt');
+                if (response.ok) {
+                    encryptedImage = await response.text();
+                    console.log('Encrypted high school image loaded successfully');
+                } else {
+                    document.getElementById('hs-status-message').textContent = 'Image file not found';
+                    document.getElementById('hs-status-message').style.display = 'block';
+                    document.getElementById('hs-status-message').style.color = '#d32f2f';
+                }
+
+                // Load all secondary school images
+                for (const key in encryptedSecondaryImages) {
+                    try {
+                        const secResponse = await fetch(`./secondary/${key}_encrypted.txt`);
+                        if (secResponse.ok) {
+                            encryptedSecondaryImages[key] = await secResponse.text();
+                            console.log(`Encrypted image ${key} loaded successfully`);
+                        } else {
+                            console.warn(`File for ${key} not found`);
+                        }
+                    } catch (secError) {
+                        console.error(`Error loading encrypted image ${key}:`, secError);
+                    }
+                }
+                
+                // Check if we have any secondary images
+                const hasSecondaryImages = Object.values(encryptedSecondaryImages).some(val => val !== null);
+                if (!hasSecondaryImages) {
+                    document.getElementById('secondary-status-message').textContent = 'No achievement images found';
+                    document.getElementById('secondary-status-message').style.display = 'block';
+                    document.getElementById('secondary-status-message').style.color = '#d32f2f';
+                }
+            } catch (error) {
+                console.error('Error loading encrypted images:', error);
+                document.getElementById('hs-status-message').textContent = 'Error loading encrypted files';
+                document.getElementById('hs-status-message').style.display = 'block';
+                document.getElementById('hs-status-message').style.color = '#d32f2f';
+            }
+        });
+
+        // Function to handle password and decrypt the high school image
+        function decryptAndShowImage() {
+            let password = document.getElementById("password-input").value;
+            const statusMsg = document.getElementById('hs-status-message');
+            
+            if (!encryptedImage) {
+                statusMsg.textContent = 'No encrypted image data available';
+                statusMsg.style.display = 'block';
+                statusMsg.style.color = '#d32f2f';
+                return;
+            }
+            
+            try {
+                // Process password to match encryption (pad/truncate to 16 bytes)
+                if (password.length < 16) {
+                    password = password.padEnd(16, " ");
+                } else if (password.length > 16) {
+                    password = password.substring(0, 16);
+                }
+
+                const key = CryptoJS.enc.Utf8.parse(password);
+                const decrypted = CryptoJS.AES.decrypt(encryptedImage, key, {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                
+                const base64String = decrypted.toString(CryptoJS.enc.Utf8);
+                
+                // Check if decryption was successful
+                if (base64String && base64String.startsWith("/9j/")) { // JPEG signature
+                    // Create and display the image
+                    const container = document.getElementById("protected-image-container");
+                    container.innerHTML = `<img src="data:image/jpeg;base64,${base64String}" alt="Teacher Photo" onclick="openLightbox(this)">`;
+                    
+                    // Hide the password section
+                    document.getElementById('protected-image-section').style.display = 'none';
+                    
+                    // Show success message
+                    statusMsg.textContent = 'Image unlocked successfully!';
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#2e7d32';
+                } else {
+                    statusMsg.textContent = 'Incorrect password or corrupted data';
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#d32f2f';
+                }
+            } catch (e) {
+                console.error('Decryption error:', e);
+                statusMsg.textContent = 'Decryption failed - please try again';
+                statusMsg.style.display = 'block';
+                statusMsg.style.color = '#d32f2f';
+            }
+        }
+
+        // Function to decrypt and show secondary school images
+        function decryptAndShowSecondaryImages() {
+            let password = document.getElementById("secondary-password-input").value;
+            const statusMsg = document.getElementById('secondary-status-message');
+            const container = document.getElementById("secondary-decrypted-images");
+            
+            // Check if we have any encrypted images
+            const hasEncryptedImages = Object.values(encryptedSecondaryImages).some(val => val !== null);
+            
+            if (!hasEncryptedImages) {
+                statusMsg.textContent = 'No achievement images available';
+                statusMsg.style.display = 'block';
+                statusMsg.style.color = '#d32f2f';
+                return;
+            }
+            
+            try {
+                // Process password to match encryption
+                if (password.length < 16) {
+                    password = password.padEnd(16, " ");
+                } else if (password.length > 16) {
+                    password = password.substring(0, 16);
+                }
+                
+                const key = CryptoJS.enc.Utf8.parse(password);
+                let decryptionSuccessful = false;
+                let imagesHTML = '';
+                
+                // Try to decrypt each image
+                for (const [imageName, encryptedData] of Object.entries(encryptedSecondaryImages)) {
+                    if (encryptedData) {
+                        try {
+                            // For Base64 encoded ciphertext (if your encrypted files are stored this way)
+                            const decrypted = CryptoJS.AES.decrypt(encryptedData, key, {
+                                mode: CryptoJS.mode.ECB,
+                                padding: CryptoJS.pad.Pkcs7
+                            });
+                            
+                            const base64String = decrypted.toString(CryptoJS.enc.Utf8);
+                            
+                            // Check if the decryption produced valid image data
+                            if (base64String && (base64String.startsWith("/9j/") || base64String.startsWith("iVBOR"))) {
+                                imagesHTML += `<img src="data:image/jpeg;base64,${base64String}" alt="Achievement ${imageName}" onclick="openLightbox(this)">`;
+                                decryptionSuccessful = true;
+                            }
+                        } catch (e) {
+                            console.warn(`Failed to decrypt image ${imageName}:`, e);
+                        }
+                    }
+                }
+                
+                if (decryptionSuccessful) {
+                    // Update the container with decrypted images
+                    container.innerHTML += imagesHTML;
+                    // container.style.display = 'block';
+                    
+                    // Hide the password form
+                    document.getElementById('secondary-password-section').style.display = 'none';
+                    
+                    // Show success message
+                    statusMsg.textContent = 'Images unlocked successfully!';
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#2e7d32';
+                } else {
+                    statusMsg.textContent = 'Incorrect password or no valid images';
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#d32f2f';
+                }
+            } catch (e) {
+                console.error('Decryption error:', e);
+                statusMsg.textContent = 'Decryption failed - please try again';
+                statusMsg.style.display = 'block';
+                statusMsg.style.color = '#d32f2f';
+            }
+        }
+
+        // Rest of your script (lightbox, etc.) remains unchanged
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        let currentImages = [];
+        let currentIndex = 0;
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-image');
+
+        function fixSingleImages() {
+            const imageContainers = document.querySelectorAll('.timeline-images');
+            imageContainers.forEach(container => {
+                const images = container.querySelectorAll('img');
+                if (images.length === 1) {
+                    container.classList.add('single-image');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fixSingleImages);
+        fixSingleImages();
+
+        function openLightbox(img) {
+            const parent = img.closest('.timeline-images');
+            currentImages = Array.from(parent.querySelectorAll('img'));
+            currentIndex = currentImages.indexOf(img);
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentIndex += direction;
+            if (currentIndex >= currentImages.length) {
+                currentIndex = 0;
+            } else if (currentIndex < 0) {
+                currentIndex = currentImages.length - 1;
+            }
+            const newImg = currentImages[currentIndex];
+            lightboxImg.src = newImg.src;
+            lightboxImg.alt = newImg.alt;
+        }
+
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') {
+                closeLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                changeImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeImage(1);
+            }
+        });
+    </script>
+</body>
+</html>
